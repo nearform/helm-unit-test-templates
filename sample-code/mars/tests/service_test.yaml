@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: test mars service
+templates:
+  - service.yaml
+tests:
+  - it: should be of correct kind, apiVersion, and count
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+
+  - it: should have common metadata
+    release:
+      name: foobar
+    asserts:
+      - equal:
+          path: metadata.name
+          value: foobar-mars
+      - isNotNullOrEmpty:
+          path: metadata.labels
+
+  - it: should have common selector labels
+    release:
+      name: foobar
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/instance: foobar
+            app.kubernetes.io/name: mars
+
+  - it: should be of spec type ClusterIP
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+
+  - it: should allow spec type to be configurable
+    set:
+      service.type: MyDifferentType
+    asserts:
+      - equal:
+          path: spec.type
+          value: MyDifferentType
+
+  - it: should have a single HTTP port on default 80
+    asserts:
+      - equal:
+          path: spec.ports
+          value:
+            - port: 80
+              targetPort: http
+              protocol: TCP
+              name: http
+
+  - it: should allow service port to be configurable
+    set:
+      service.port: 1234
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 1234

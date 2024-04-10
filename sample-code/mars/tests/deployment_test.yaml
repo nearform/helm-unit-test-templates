@@ -1,0 +1,233 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: test mars deployment
+templates:
+    - deployment.yaml
+tests:
+  - it: should be of correct kind, apiVersion, and count
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+
+  - it: should have common metadata
+    release:
+      name: foobar
+    asserts:
+      - equal:
+          path: metadata.name
+          value: foobar-mars
+      - isNotNullOrEmpty:
+          path: metadata.labels
+
+  - it: sets replicas if autoscaling not enabled (default)
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+
+  - it: sets replicas if autoscaling not enabled (custom)
+    set:
+      replicaCount: 4
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 4
+
+  - it: should have common labels
+    release:
+      name: foobar
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/instance: foobar
+            app.kubernetes.io/name: mars
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app.kubernetes.io/instance: foobar
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/version: 1.16.0
+            app.kubernetes.io/name: mars
+            helm.sh/chart: mars-0.1.0
+
+  - it: should use podAnnotations
+    set:
+      podAnnotations:
+        myCustom: longcat
+        foo: bar
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations.myCustom
+          value: longcat
+      - equal:
+          path: spec.template.metadata.annotations.foo
+          value: bar
+
+  - it: should set imagePullSecrets (custom)
+    set:
+      imagePullSecrets:
+        - name: foobar
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets
+          value:
+            - name: foobar
+
+  - it: should not set imagePullSecrets if empty
+    set:
+      imagePullSecrets: []
+    asserts:
+      - notExists:
+          path: spec.template.spec.imagePullSecrets
+
+  - it: should set serviceAccountName (default)
+    release:
+      name: foobar
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: foobar-mars
+
+  - it: should set serviceAccountName (custom)
+    set:
+      serviceAccount:
+        name: foobar
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: foobar
+
+  - it: should set pod securityContext (default)
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value: {}
+
+  - it: should set pod securityContext (custom)
+    set:
+      podSecurityContext:
+        foo: bar
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            foo: bar
+
+  - it: should set nodeSelector (custom)
+    set:
+      nodeSelector.agentpool: foobar
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            agentpool: foobar
+
+  - it: should not set affinity (default)
+    asserts:
+      - notExists :
+          path: spec.template.spec.affinity
+
+  - it: should set affinity (custom)
+    set:
+      affinity:
+        my: foobar
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+            my: foobar
+
+  - it: should set tolerations (custom)
+    set:
+      tolerations:
+        - key: "custom"
+          operation: "NotEqual"
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: "custom"
+              operation: "NotEqual"
+
+  ###
+  ## container[0] - application (node)
+  ###
+  - it: should set application container name
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: mars
+
+  - it: should set application container securityContext (default)
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value: {}
+
+  - it: should set application container securityContext (custom)
+    set:
+      securityContext:
+        runAsUser: 1234
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            runAsUser: 1234
+
+  - it: should set application container image (custom)
+    set:
+      image:
+        repository: repo.example.com/foobar
+        tag: latest
+        pullPolicy: Sometimes
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: repo.example.com/foobar:latest
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Sometimes
+
+  - it: should set application container ports
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+
+  - it: should set application container probes
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            httpGet:
+              path: /
+              port: http
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            httpGet:
+              path: /
+              port: http
+
+  - it: should set application container resources (custom)
+    set:
+      resources:
+        limits:
+          memory: 2Gi
+        requests:
+          cpu: 750m
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits:
+              memory: 2Gi
+            requests:
+              cpu: 750m
