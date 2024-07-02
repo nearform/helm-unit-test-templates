@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
-suite: test mars deployment
+suite: test {{ CHART_NAME }} deployment
 templates:
     - deployment.yaml
 tests:
@@ -18,7 +18,7 @@ tests:
     asserts:
       - equal:
           path: metadata.name
-          value: foobar-mars
+          value: foobar-{{ CHART_NAME }}
       - isNotNullOrEmpty:
           path: metadata.labels
 
@@ -44,15 +44,15 @@ tests:
           path: spec.selector.matchLabels
           value:
             app.kubernetes.io/instance: foobar
-            app.kubernetes.io/name: mars
+            app.kubernetes.io/name: {{ CHART_NAME }}
       - equal:
           path: spec.template.metadata.labels
           value:
             app.kubernetes.io/instance: foobar
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/version: 1.16.0
-            app.kubernetes.io/name: mars
-            helm.sh/chart: mars-0.1.0
+            app.kubernetes.io/name: {{ CHART_NAME }}
+            helm.sh/chart: {{ CHART_NAME }}-0.1.0
 
   - it: should use podAnnotations
     set:
@@ -90,7 +90,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.serviceAccountName
-          value: foobar-mars
+          value: foobar-{{ CHART_NAME }}
 
   - it: should set serviceAccountName (custom)
     set:
@@ -160,7 +160,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[0].name
-          value: mars
+          value: {{ CHART_NAME }}
 
   - it: should set application container securityContext (default)
     asserts:
