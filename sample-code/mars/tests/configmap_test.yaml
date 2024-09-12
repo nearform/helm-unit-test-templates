@@ -10,7 +10,7 @@ tests:
       - isKind:
           of: ConfigMap
       - isAPIVersion:
-          of: v2
+          of: v1
 
   - it: should have common labels
     asserts:

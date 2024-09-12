@@ -10,7 +10,7 @@ CHART_DIR=$1
 VALUES_FILE=$2
 
 # Execute the Python script for rendering
-python render_and_test.py "$CHART_DIR" "$VALUES_FILE"
+python renderer.py "$CHART_DIR" "$VALUES_FILE"
 
 # Check if the Python script executed successfully
 if [ $? -eq 0 ]; then
