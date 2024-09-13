@@ -6,7 +6,7 @@ tests:
   - it: should be of correct kind, apiVersion, and count
     asserts:
       - hasDocuments:
-          count: 1
+          count: {{ SERVICE_COUNT }}
       - isKind:
           of: Service
       - isAPIVersion:
@@ -14,11 +14,11 @@ tests:
 
   - it: should have common metadata
     release:
-      name: foobar
+      name: {{ RELEASE_NAME }}
     asserts:
       - equal:
           path: metadata.name
-          value: foobar-{{ CHART_NAME }}
+          value: {{ RELEASE_NAME }}-{{ CHART_NAME }}
       - isNotNullOrEmpty:
           path: metadata.labels
 

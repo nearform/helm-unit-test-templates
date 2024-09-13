@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import shutil
 from typing import Dict, Any
-from jinja2 import Template
+from jinja2 import Template, Environment
 import yaml
 import logging
 
@@ -41,7 +41,13 @@ def render_yaml_template(content: str, params: Dict[str, Any]) -> str:
     Returns:
         str: Rendered YAML content.
     """
-    template = Template(content)
+    env = Environment(
+        trim_blocks=True,
+        lstrip_blocks=True,
+        keep_trailing_newline=True
+    )
+    env.filters['to_yaml'] = lambda v: yaml.dump(v, default_flow_style=False)
+    template = env.from_string(content)
     return template.render(params)
 
 def process_test_yaml_files(source_dir: Path, dest_dir: Path, params: Dict[str, Any]) -> None:

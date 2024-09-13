@@ -6,7 +6,7 @@ tests:
   - it: should be of correct kind, apiVersion, and count
     asserts:
       - hasDocuments:
-          count: 1
+          count: {{ CONFIGMAP_COUNT | default(1) }}
       - isKind:
           of: ConfigMap
       - isAPIVersion:
@@ -20,11 +20,11 @@ tests:
   - it: should have correct name (standard)
     documentIndex: 0
     release:
-      name: foobar
+      name: {{ RELEASE_NAME }}
     asserts:
       - equal:
           path: metadata.name
-          value: foobar-{{ CHART_NAME }}
+          value: {{ RELEASE_NAME }}-{{ CHART_NAME }}
 
   - it: should not have Helm hook (standard)
     documentIndex: 0
@@ -37,4 +37,4 @@ tests:
       - equal:
           path: data
           value:
-            TZ: "UTC"
+            {{ CONFIGMAP_DATA | to_yaml | indent(12) }}
