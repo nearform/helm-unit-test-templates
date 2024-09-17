@@ -27,7 +27,7 @@ For detailed instructions on how to use these templates and run tests, please se
 
 - `sample-code/`: Contains example Helm chart and usage instructions
   - `mars/`: Sample Helm chart
-  - `mars_rendered/`: Rendered version of the sample chart (generated during testing)
+  - `mars_rendered/`: temporary rendered version of the sample chart (generated during testing)
   - `README.md`: Detailed instructions for using the sample code
   - `renderer.py`: Python script for rendering templates
   - `run_tests.sh`: Shell script to run the tests

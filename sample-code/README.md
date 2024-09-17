@@ -15,19 +15,13 @@ This directory contains sample code and scripts to demonstrate the usage of helm
 
 1. Ensure you have Helm and the helm-unittest plugin installed.
 
-2. To run the unit tests against the sample Helm chart:
-
-   ```
-   helm unittest mars
-   ```
-
-3. To use the Renderer script and run templated test suites:
+2. To use the Renderer script and run against templated test suites:
 
    a. Review and modify the `values.json` file if needed with your specific parameters:
       ```json
       {
         "CHART_NAME": "mars",
-        "RELEASE_NAME": "test-release",
+        "RELEASE_NAME": "foobar",
         "CONFIGMAP_DATA": {
           "TZ": "UTC",
           "LOG_LEVEL": "INFO"
@@ -51,8 +45,6 @@ This directory contains sample code and scripts to demonstrate the usage of helm
 
 ## Customizing Tests
 
-- Modify YAML templates in `mars/tests/` to add or change test scenarios.
+- Modify YAML test templates in `mars/tests/` to add or change test scenarios.
 - Adjust `values.json` to customize tests for the chart.
 - For more advanced customizations, you may need to modify `renderer.py`.
-
-For more information on the overall project, please refer to the main [README](../README.md) in the root directory.
