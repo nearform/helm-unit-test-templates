@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
-suite: test mars service
+suite: test {{ CHART_NAME }} service
 templates:
   - service.yaml
 tests:
   - it: should be of correct kind, apiVersion, and count
     asserts:
       - hasDocuments:
-          count: 1
+          count: {{ SERVICE_COUNT }}
       - isKind:
           of: Service
       - isAPIVersion:
@@ -14,11 +14,11 @@ tests:
 
   - it: should have common metadata
     release:
-      name: foobar
+      name: {{ RELEASE_NAME }}
     asserts:
       - equal:
           path: metadata.name
-          value: foobar-mars
+          value: {{ RELEASE_NAME }}-{{ CHART_NAME }}
       - isNotNullOrEmpty:
           path: metadata.labels
 
@@ -30,7 +30,7 @@ tests:
           path: spec.selector
           value:
             app.kubernetes.io/instance: foobar
-            app.kubernetes.io/name: mars
+            app.kubernetes.io/name: {{ CHART_NAME }}
 
   - it: should be of spec type ClusterIP
     asserts:

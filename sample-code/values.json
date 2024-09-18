@@ -1,0 +1,13 @@
+{
+    "CHART_NAME": "mars",
+    "RELEASE_NAME": "foobar",
+    "CONFIGMAP_COUNT": 1,
+    "DEPLOYMENT_COUNT": 2,
+    "SECRET_COUNT": 1,
+    "SERVICE_COUNT": 1,
+    "CONFIGMAP_DATA": {
+      "TZ": "UTC",
+      "JOHN": "DOE"
+    }
+  }
+  
